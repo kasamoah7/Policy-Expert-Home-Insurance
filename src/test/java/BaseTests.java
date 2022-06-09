@@ -5,10 +5,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class BaseTests {
     private WebDriver driver;
@@ -41,10 +43,10 @@ public class BaseTests {
     }
     @After
     public void tearDown(){
-   //     driver.quit();
+   // driver.quit();
     }
     @Test
-    public void shouldGetHomeInsuranceQuote(){
+    public void shouldGetHomeInsuranceQuote() throws InterruptedException {
         startBrowser();
       clickHomeInsuranceButton();
         clickGetAQuoteButton();
@@ -56,7 +58,7 @@ public class BaseTests {
         setDateOfBirthYear("1956");
         selectMaritalStatus();
         setOccupation("Doctor");
-        anotherOccupationQuestion("Yes");
+        anotherOccupationQuestion("No");
         setMainPhoneNumber("07956458235");
         setEmailAddress("yayab@live.com");
         clickNextButton();
@@ -97,11 +99,16 @@ public class BaseTests {
     public void selectMaritalStatus(){
         driver.findElement(selectMaritalStatus).click();
     }
-    public void setOccupation(String occupation){
+    public void setOccupation(String occupation) throws InterruptedException {
         WebElement element = driver.findElement(occupationInput);
-        element.sendKeys(occupation);
+        //Slow down the keyboard entry
+        for (int i = 0; i < occupation.length(); i++) {
+            element.sendKeys(String.valueOf(occupation.charAt(i)));
+            TimeUnit.SECONDS.sleep(1);
+        }
         element.sendKeys(Keys.ARROW_DOWN);
         element.sendKeys(Keys.ENTER);
+
 
     }
     public void anotherOccupationQuestion(String answer){
