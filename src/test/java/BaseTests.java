@@ -1,20 +1,16 @@
-import io.opentelemetry.exporter.logging.SystemOutLogExporter;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public class BaseTests {
     private WebDriver driver;
 
+    By closeCookieButton = By.cssSelector("button[aria-label='Close cookie']");
     By homeInsuranceButton = By.xpath("//a[contains(@href, '/home-insurance')]");
     By getAQuoteButton = By.cssSelector("a[href~='https://insurance.policyexpert.co.uk/home']");
     By selectTitle = By.cssSelector("button[aria-label='Mr']");
@@ -32,103 +28,118 @@ public class BaseTests {
     By nextButton = By.cssSelector("button.styled__PrimaryButton-sc-qy8nbl-2.Sectionstyle__PrimaryButton-sc-b4fcid-4.lcLfTk.fPpkjj");
 
     @Before
-    public void setUp(){
+    public void setUp() {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
     }
-    public void startBrowser(){
+
+    public void startBrowser() {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.navigate().to("https://www.policyexpert.co.uk/");
     }
+
     @After
-    public void tearDown(){
-   // driver.quit();
+    public void tearDown() {
+        driver.quit();
     }
+
     @Test
     public void shouldGetHomeInsuranceQuote() throws InterruptedException {
         startBrowser();
-      clickHomeInsuranceButton();
+        clickCloseCookieButton();
+        clickHomeInsuranceButton();
         clickGetAQuoteButton();
         selectTitle();
         setFirstName("Jim");
         setLastName("Brown");
-       setDateOfBirthDay("07");
+        setDateOfBirthDay("07");
         setDateOfBirthMonth("04");
         setDateOfBirthYear("1956");
         selectMaritalStatus();
         setOccupation("Doctor");
         anotherOccupationQuestion("No");
         setMainPhoneNumber("07956458235");
-        setEmailAddress("yayab@live.com");
+        setEmailAddress("vketipisz@qmetric.co.uk");
         clickNextButton();
         System.out.println(driver.getCurrentUrl());
         Assert.assertTrue("You have not reached the About you and other residents page", driver.getCurrentUrl().contains("statements-about-you"));
 
     }
-    public void selectTitle(){
-       // WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(5));
-       // wait.until(ExpectedConditions.visibilityOfElementLocated(selectTitle));
+
+    public void selectTitle() {
         driver.findElement(selectTitle).click();
 
     }
-    public void clickHomeInsuranceButton(){
+
+    public void clickHomeInsuranceButton() {
         driver.findElement(homeInsuranceButton).click();
     }
+
+    public void clickCloseCookieButton(){
+        driver.findElement(closeCookieButton).click();
+    }
+
     public void clickGetAQuoteButton() {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         WebElement element = driver.findElement(getAQuoteButton);
         js.executeScript("arguments[0].click();", element);
     }
 
-    public void setFirstName(String firstName){
+    public void setFirstName(String firstName) {
         driver.findElement(firstNameInput).sendKeys(firstName);
     }
-    public void setLastName(String lastName){
+
+    public void setLastName(String lastName) {
         driver.findElement(lastNameInput).sendKeys(lastName);
     }
-    public void setDateOfBirthDay(String userDay){
+
+    public void setDateOfBirthDay(String userDay) {
         driver.findElement(birthDayInput).sendKeys(userDay);
     }
-    public void setDateOfBirthMonth(String userMonth){
+
+    public void setDateOfBirthMonth(String userMonth) {
         driver.findElement(birthMonthInput).sendKeys(userMonth);
     }
-    public void setDateOfBirthYear(String userYear){
+
+    public void setDateOfBirthYear(String userYear) {
         driver.findElement(birthYearInput).sendKeys(userYear);
     }
-    public void selectMaritalStatus(){
+
+    public void selectMaritalStatus() {
         driver.findElement(selectMaritalStatus).click();
     }
+
     public void setOccupation(String occupation) throws InterruptedException {
         WebElement element = driver.findElement(occupationInput);
         //Slow down the keyboard entry
         for (int i = 0; i < occupation.length(); i++) {
             element.sendKeys(String.valueOf(occupation.charAt(i)));
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.MILLISECONDS.sleep(500);
         }
         element.sendKeys(Keys.ARROW_DOWN);
         element.sendKeys(Keys.ENTER);
 
-
     }
-    public void anotherOccupationQuestion(String answer){
-        if (answer.equals("No")){
+
+    public void anotherOccupationQuestion(String answer) {
+        if (answer.equals("No")) {
             driver.findElement(anotherOccupationAnswer).click();
-        }else {
+        } else {
             driver.findElement(anotherOccupationAnswerYes).click();
         }
-
     }
-    public void setMainPhoneNumber(String phoneNumber){
+
+    public void setMainPhoneNumber(String phoneNumber) {
         driver.findElement(phoneNumberInput).sendKeys(phoneNumber);
     }
-    public void setEmailAddress(String emailAddress){
+
+    public void setEmailAddress(String emailAddress) {
         driver.findElement(emailAddressInput).sendKeys(emailAddress);
     }
-    public void clickNextButton(){
+
+    public void clickNextButton() {
         driver.findElement(nextButton).click();
-
-
     }
 
 }
